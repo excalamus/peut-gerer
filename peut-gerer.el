@@ -223,7 +223,7 @@ calling buffer.
 See URL `https://stackoverflow.com/a/7053298/5065796'"
   (interactive
    (let* ((prompt (format "Send to %s: " peut-gerer-shell))
-          (cmd (read-string prompt "" 'peut-gerer--command-history)))
+          (cmd (read-string prompt "" 'peut-gerer--command-history peut-gerer-command)))
    (list cmd peut-gerer-shell)))
   (let* ((pbuff (or pbuff peut-gerer-shell))
          (proc (or (get-buffer-process pbuff)
