@@ -1,4 +1,4 @@
-;;; peut-gerer.el --- Peut-gerer Enables Users To... manage project workflows
+;;; peut-gerer -- Peut-gerer Enables Users To... manage project workflows
 
 ;; Copyright (C) 2020 Matt Trzcinski (excalamus AT tutanota DOT com)
 
@@ -381,6 +381,6 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
     (setq peut-gerer-current-project project)
     (message "Project '%s' is current" peut-gerer-current-project)))
 
-(provide 'peut-gerer.el)
+(provide 'peut-gerer)
 
-;;; peut-gerer.el ends here
+;;; peut-gerer ends here
