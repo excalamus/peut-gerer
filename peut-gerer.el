@@ -377,19 +377,22 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
                      main))
          (commands (plist-get (cdr (assoc project peut-gerer-project-alist)) :commands)))
 
-    (setq peut-gerer-root root)
-    (setq peut-gerer-shell shell)
-    (setq peut-gerer-command-prefix "python")
-    (setq peut-gerer-command (concat peut-gerer-command-prefix " " main-abs))
+    (if (not (string-equal project peut-gerer-current-project))
+        (progn
+          (setq peut-gerer-root root)
+          (setq peut-gerer-shell shell)
+          (setq peut-gerer-command-prefix "python")
+          (setq peut-gerer-command (concat peut-gerer-command-prefix " " main-abs))
 
-    ;; handle virtual environment
-    (run-hook-with-args 'peut-gerer-after-select-functions venv)
+          ;; handle virtual environment
+          (run-hook-with-args 'peut-gerer-after-select-functions venv)
 
-    ;; insert commands into peut-gerer--command-history
-    (setq peut-gerer--command-history nil)
-    (mapc #'(lambda (x) (add-to-history 'peut-gerer--command-history x)) commands)
-    (setq peut-gerer-current-project project)
-    (message "Project '%s' is current" peut-gerer-current-project)))
+          ;; insert commands into peut-gerer--command-history
+          (setq peut-gerer--command-history nil)
+          (mapc #'(lambda (x) (add-to-history 'peut-gerer--command-history x)) commands)
+          (setq peut-gerer-current-project project)
+          (message "Selected '%s' project" peut-gerer-current-project))
+      (message "Project '%s' already current" peut-gerer-current-project))))
 
 (provide 'peut-gerer)
 
