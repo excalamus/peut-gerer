@@ -117,6 +117,12 @@ manually.")
 
 Functions must accept a path to a virtual environment.")
 
+;; todo generalize, currently used just to call `pyvenv-activate'
+(defvar peut-gerer-after-select-functions nil
+  "Functions to run at the end of `peut-gerer-activate-project'.
+
+Functions must accept a path to a virtual environment.")
+
 (defvar peut-gerer--active-projects-alist nil
   "Active projects.")
 
@@ -364,6 +370,7 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
    (list (completing-read "Project: " peut-gerer--active-projects-alist nil t "" nil)))
   (let* ((root (plist-get (cdr (assoc project peut-gerer-project-alist)) :root))
          (shell (concat "*" project "*"))
+         (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
          (main (plist-get (cdr (assoc project peut-gerer-project-alist)) :main))
          (main-abs (if (not (file-name-absolute-p main))
                        (concat root main)
@@ -374,6 +381,9 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
     (setq peut-gerer-shell shell)
     (setq peut-gerer-command-prefix "python")
     (setq peut-gerer-command (concat peut-gerer-command-prefix " " main-abs))
+
+    ;; handle virtual environment
+    (run-hook-with-args 'peut-gerer-after-select-functions venv)
 
     ;; insert commands into peut-gerer--command-history
     (setq peut-gerer--command-history nil)
