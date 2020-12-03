@@ -218,7 +218,7 @@ SHELL buffer only if it is visible."
         (message "Raising is disabled and %s is not currently visible!" shell)))
      ((message "No %s buffer exists!" shell)))))
 
-(defun peut-gerer-send-command (command &optional pbuff)
+(defun peut-gerer-send-command (command &optional pbuff beg end)
   "Send COMMAND to shell process with buffer name PBUFF.
 
 PBUFF is the buffer name string of a process.  If the process
@@ -253,6 +253,22 @@ See URL `https://stackoverflow.com/a/7053298/5065796'"
     (if file
         (peut-gerer-send-command (concat peut-gerer-command-prefix " " file))
       (error "Command not sent. Buffer not visiting file"))))
+
+(defun peut-gerer-send-region (&optional beg end pbuff)
+  "Send region defined by BEG and END to shell process buffer PBUFF.
+
+Use current region if BEG and END not provided.  Default PBUFF is
+`peut-gerer-shell'."
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end) nil)
+                 (list nil nil nil)))
+  (let* ((beg (or beg (if (use-region-p) (region-beginning)) nil))
+         (end (or end (if (use-region-p) (region-end)) nil))
+         (substr (or (and beg end (buffer-substring-no-properties beg end)) nil))
+         (pbuff (or pbuff peut-gerer-shell)))
+    (if substr
+        (peut-gerer-send-command substr pbuff)
+      (error "No region selected"))))
 
 (defun peut-gerer-open-dir (dirname &optional type)
   "Open all files with EXTENSION in DIRNAME.
