@@ -244,7 +244,9 @@ See URL `https://stackoverflow.com/a/7053298/5065796'"
       (goto-char (process-mark proc))
       (insert command-and-go)
       (move-marker (process-mark proc) (point)))
-    (process-send-string proc command-and-go)))
+    (process-send-string proc command-and-go)
+    (with-current-buffer pbuff
+      (comint-add-to-input-history command))))
 
 (defun peut-gerer-buffer-file-to-shell ()
   "Send current buffer file to shell as temporary postfix to `peut-gerer-command-prefix'."
