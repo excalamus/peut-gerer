@@ -146,17 +146,17 @@ command/binary (e.g. \"python\").  The
 `peut-gerer-command' by functions like
 `peut-gerer-set-command-to-current-file'."
   (interactive
-   (list (read-file-name "Command prefix: " peut-gerer-root nil 'confirm)))
+   (list (read-file-name "Set command prefix: " peut-gerer-root nil 'confirm)))
   (setq peut-gerer-command-prefix bin)
   (message "Set `peut-gerer-command-prefix' to %s" peut-gerer-command-prefix))
 
 (defun peut-gerer-set-shell (pbuff)
-  "Set `peut-gerer-shell' to the1 buffer name PBUFF associated with a process.
+  "Set `peut-gerer-shell' to the buffer name PBUFF associated with a process.
 
 For example, if 'shell' is a process, PBUFF is the buffer name
 \"*shell*\" associated with it."
   (interactive
-   (list (read-buffer "Process buffer: " nil t '(lambda (x) (processp (get-buffer-process (car x)))))))
+   (list (read-buffer "Set shell to: " nil t '(lambda (x) (processp (get-buffer-process (car x)))))))
   (setq peut-gerer-shell pbuff)
   (message "Set `peut-gerer-shell' to: %s" peut-gerer-shell))
 
@@ -189,24 +189,26 @@ Returns newly created shell process.
 
 Adapted from URL `https://stackoverflow.com/a/36450889/5065796'"
     (interactive
-     (let ((name (read-string "shell name: " nil)))
+     (let ((name (read-string "Create shell name: " nil)))
        (list name)))
     (let ((name (or name peut-gerer-shell)))
       (get-buffer-process (shell name))))
 
-(defun peut-gerer-switch-to-shell (&optional shell raise)
+(defun peut-gerer-switch-to-shell (&optional shell all-frames raise)
   "Switch to current SHELL buffer and RAISE.
 
 Switch to previous buffer if current buffer is SHELL.  When RAISE
-is t, switch current window to SHELL.  When RAISE is nil, goto
+is t, switch current window to SHELL.  See `get-buffer-window'
+for ALL-FRAME options; default is `t'.  When RAISE is nil, goto
 SHELL buffer only if it is visible."
   (interactive)
   (let ((shell (or shell peut-gerer-shell))
+        (all-frames (or all-frames t))
         (raise (or raise nil)))
     (cond
      ((string-equal (buffer-name (current-buffer)) shell)
       (switch-to-prev-buffer))
-     ((get-buffer-window shell t)
+     ((get-buffer-window shell all-frames)
       (progn
         (switch-to-buffer-other-frame shell)
         (goto-char (point-max))))
@@ -313,7 +315,7 @@ See URL `https://emacs.stackexchange.com/a/46480'"
 Save all buffers before killing all buffers in `peut-gerer-root'
 and removing PROJECT from `peut-gerer--active-projects-alist'."
   (interactive
-   (list (completing-read "Project: " peut-gerer--active-projects-alist nil t "" nil)))
+   (list (completing-read "Deactivate project: " peut-gerer--active-projects-alist nil t "" nil)))
   (let* ((root (plist-get (cdr (assoc project peut-gerer-project-alist)) :root))
          (shell (concat "*" project "*"))
          (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
@@ -339,7 +341,7 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
 (defun peut-gerer-activate-project (project)
   "Set up environment for PROJECT."
   (interactive
-   (list (completing-read "Project: " (mapcar 'car peut-gerer-project-alist) nil t nil nil)))
+   (list (completing-read "Activate project: " (mapcar 'car peut-gerer-project-alist) nil t nil nil)))
   (let* ((root (plist-get (cdr (assoc project peut-gerer-project-alist)) :root))
          (shell (concat "*" project "*"))
          (proc (peut-gerer-create-shell shell))
@@ -385,7 +387,7 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
 (defun peut-gerer-select-project (project)
   "Toggle active PROJECT as current."
   (interactive
-   (list (completing-read "Project: " peut-gerer--active-projects-alist nil t "" nil)))
+   (list (completing-read "Select project: " peut-gerer--active-projects-alist nil t "" nil)))
   (let* ((root (plist-get (cdr (assoc project peut-gerer-project-alist)) :root))
          (shell (concat "*" project "*"))
          (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
