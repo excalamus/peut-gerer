@@ -194,31 +194,47 @@ Adapted from URL `https://stackoverflow.com/a/36450889/5065796'"
     (let ((name (or name peut-gerer-shell)))
       (get-buffer-process (shell name))))
 
-(defun peut-gerer-switch-to-shell (&optional shell all-frames raise)
-  "Switch to current SHELL buffer and RAISE.
+(defun peut-gerer-switch-to (target &optional raise all-frames)
+  "Switch to TARGET buffer and RAISE.
 
-Switch to previous buffer if current buffer is SHELL.  When RAISE
-is t, switch current window to SHELL.  See `get-buffer-window'
+TARGET may be a buffer, buffer name, or symbol.  Symbol may be
+`:main' or `:shell' and correspond to those in
+`peut-gerer-project-alist'.
+
+Switch to previous buffer if current buffer is TARGET.  When RAISE
+is t, switch current window to TARGET.  See `get-buffer-window'
 for ALL-FRAME options; default is `t'.  When RAISE is nil, goto
-SHELL buffer only if it is visible."
-  (interactive)
-  (let ((shell (or shell peut-gerer-shell))
-        (all-frames (or all-frames t))
-        (raise (or raise nil)))
+TARGET buffer only if it is visible."
+  (interactive
+   (let ((target (read-buffer "Switch to: " nil t)))
+     (list target nil nil)))
+  (let* ((target  ;; buffer name as string
+          (cond ((eq target :shell) peut-gerer-shell)
+                ((eq target :main) (buffer-name
+                                    (get-file-buffer
+                                     (plist-get (cdr (assoc peut-gerer-current-project
+                                                            peut-gerer-project-alist)) :main))))
+                ((bufferp target) (buffer-name target))
+                ((stringp target) (if (get-buffer target) target
+                                    (error "Invalid buffer %s" target)))
+
+                (t (error "Invalid buffer %s" target))))
+         (raise (or raise nil))
+         (all-frames (or all-frames t)))
     (cond
-     ((string-equal (buffer-name (current-buffer)) shell)
+     ((string-equal (buffer-name (current-buffer)) target)
       (switch-to-prev-buffer))
-     ((get-buffer-window shell all-frames)
+     ((get-buffer-window target all-frames)
       (progn
-        (switch-to-buffer-other-frame shell)
+        (switch-to-buffer-other-frame target)
         (goto-char (point-max))))
-     ((get-buffer shell)
+     ((get-buffer target)
       (if raise
           (progn
-            (switch-to-buffer shell)
+            (switch-to-buffer target)
             (goto-char (point-max)))
-        (message "Raising is disabled and %s is not currently visible!" shell)))
-     ((message "No %s buffer exists!" shell)))))
+        (message "Raising is disabled and %s is not currently visible!" target)))
+     ((message "No %s buffer exists!" target)))))
 
 (defun peut-gerer-send-command (command &optional pbuff beg end)
   "Send COMMAND to shell process with buffer name PBUFF.
