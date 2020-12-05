@@ -101,7 +101,7 @@ This is typically an executable such as \"python\".")
 (defvar peut-gerer-shell "*shell*"
   "Primary shell process buffer.")
 
-(defvar peut-gerer-command nil
+(defvar peut-gerer-command ""
   "Primary shell command.
 
 This can be any string.  Several commands, such as
