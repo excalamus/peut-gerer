@@ -101,6 +101,9 @@ This is typically an executable such as \"python\".")
 (defvar peut-gerer-shell "*shell*"
   "Primary shell process buffer.")
 
+(defvar peut-gerer-root default-directory
+  "Active project's root directory.")
+
 (defvar peut-gerer-command ""
   "Primary shell command.
 
@@ -311,7 +314,9 @@ See URL `https://emacs.stackexchange.com/a/46480'"
     (mapc #'find-file (directory-files-recursively dirname regexp nil))))
 
 (defun peut-gerer-kill-all-visiting-buffers (&optional dir)
-  "Kill all buffers visiting DIR."
+  "Kill all buffers visiting DIR.
+
+Default DIR is `peut-gerer-root'"
   (interactive)
   (let ((dir (or dir peut-gerer-root)))
     (mapcar
@@ -374,7 +379,7 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
 
     ;; set up globals
     (setq peut-gerer-current-project project)
-    (setq peut-gerer-root root)
+    (setq peut-gerer-root (subst-char-in-string ?\\ ?/ peut-gerer-root))
     (setq peut-gerer-shell shell)
     (setq peut-gerer-command-prefix "python")
     (setq peut-gerer-command (concat peut-gerer-command-prefix " " main-abs))
@@ -415,7 +420,7 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
 
     (if (not (string-equal project peut-gerer-current-project))
         (progn
-          (setq peut-gerer-root root)
+          (setq peut-gerer-root (subst-char-in-string ?\\ ?/ peut-gerer-root))
           (setq peut-gerer-shell shell)
           (setq peut-gerer-command-prefix "python")
           (setq peut-gerer-command (concat peut-gerer-command-prefix " " main-abs))
