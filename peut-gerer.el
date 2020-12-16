@@ -139,7 +139,7 @@ Modified by `peut-gerer-activate-project' and
 
 ;;; Functions:
 
-(defun peut-gerer-command-set-prefix (prefix)
+(defun peut-gerer-set-command-prefix (prefix)
   "Set `peut-gerer-command-prefix' to PREFIX.
 
 PREFIX may be any string.  This is prepended to the default
@@ -150,7 +150,7 @@ command/binary (e.g. \"python\").  The
 `peut-gerer-set-command-to-current-file'."
   (interactive
    (list (read-file-name "Set command prefix: " peut-gerer-root nil 'confirm)))
-  (setq peut-gerer-command-prefix bin)
+  (setq peut-gerer-command-prefix prefix)
   (message "Set `peut-gerer-command-prefix' to %s" peut-gerer-command-prefix))
 
 (defun peut-gerer-set-shell (pbuff)
