@@ -149,7 +149,7 @@ command/binary (e.g. \"python\").  The
 `peut-gerer-command' by functions like
 `peut-gerer-set-command-to-current-file'."
   (interactive
-   (list (read-file-name "Set command prefix: " peut-gerer-root nil 'confirm)))
+   (list (read-string "Set command prefix: " "python" nil "python")))
   (setq peut-gerer-command-prefix prefix)
   (message "Set `peut-gerer-command-prefix' to %s" peut-gerer-command-prefix))
 
