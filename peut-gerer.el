@@ -126,6 +126,38 @@ Functions must accept a path to a virtual environment.")
 
 Functions must accept a path to a virtual environment.")
 
+;; todo projects are currently python centric; perhaps generalize with
+;; a :type keyword which triggers the appropriate activation sequence
+;; for the type (python, C, etc.)
+(defvar peut-gerer-project-alist nil
+  "Project alist.
+
+An entry in the `peut-gerer-project-alist' must contain a :root,
+:main, :venv, and :activate.
+
+:root     -- project root directory
+:main     -- entry point
+:venv     -- virtual environment directory
+:activate -- activation command
+:commands -- commands to add to `peut-gerer-send-command' history
+
+Example:
+
+    (setq peut-gerer-project-alist
+        '((\"project-x\"
+            :root \"/data/data/com.termux/files/home/projects/project-x/\"
+            :main \"main.py\"
+            :venv  \"/data/data/com.termux/files/home/projects/project-x/venv/\"
+            :activate \"/data/data/com.termux/files/home/projects/project-x/venv/bin/activate\"
+            :commands (\"pyinstaller build.spec\")
+            )
+            (\"project-a\"
+            :root \"C:\\projects\\project-umbrella\\apps\\project_a\\\"
+            :main \"project_a.py\"
+            :venv \"C:\\Users\\excalamus\\Anaconda3\\envs\\project_a\\\"
+            :activate \"C:\\Users\\excalamus\\Anaconda3\\condabin\\conda.bat activate\"
+            )))")
+
 (defvar peut-gerer--active-projects-alist nil
   "Active projects.")
 
