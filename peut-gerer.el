@@ -133,7 +133,8 @@ Functions must accept a path to a virtual environment.")
   "Project alist.
 
 An entry in the `peut-gerer-project-alist' must contain a :root,
-:main, :venv, and :activate.
+:main, :venv, and :activate.  For best results, use absolute
+paths.
 
 :root     -- project root directory
 :main     -- entry point
