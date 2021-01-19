@@ -148,7 +148,7 @@ Example:
             :root \"/data/data/com.termux/files/home/projects/project-x/\"
             :main \"main.py\"
             :venv  \"/data/data/com.termux/files/home/projects/project-x/venv/\"
-            :activate \"/data/data/com.termux/files/home/projects/project-x/venv/bin/activate\"
+            :activate \"source /data/data/com.termux/files/home/projects/project-x/venv/bin/activate\"
             :commands (\"pyinstaller build.spec\")
             )
             (\"project-a\"
@@ -404,9 +404,7 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
                      main))
          (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
          (activate (plist-get (cdr (assoc project peut-gerer-project-alist)) :activate))
-         (activate-cmd (if (eq system-type 'gnu/linux)
-                           (concat "source " activate)
-                         activate))
+         (activate-cmd activate)
          (commands (plist-get (cdr (assoc project peut-gerer-project-alist)) :commands)))
 
     ;; set up globals
