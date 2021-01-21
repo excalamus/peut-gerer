@@ -93,7 +93,7 @@
 (defvar peut-gerer-current-project nil
   "Name of the primary active project.")
 
-(defvar peut-gerer-command-prefix nil
+(defvar peut-gerer-command-prefix "python"
   "Prefix to be used in shell calls.
 
 This is typically an executable such as \"python\".")
