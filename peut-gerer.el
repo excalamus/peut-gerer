@@ -55,7 +55,7 @@
 ;;              :root "/data/data/com.termux/files/home/projects/project-x/"
 ;;              :main "main.py"
 ;;              :venv  "/data/data/com.termux/files/home/projects/project-x/venv/"
-;;              :activate "/data/data/com.termux/files/home/projects/project-x/venv/bin/activate"
+;;              :activate "source /data/data/com.termux/files/home/projects/project-x/venv/bin/activate"
 ;;              :commands ("pyinstaller build.spec")
 ;;              )
 ;;             ("project-a"
