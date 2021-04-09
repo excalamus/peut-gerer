@@ -211,7 +211,8 @@ file, but later in development another file needs to be called
 frequently.  It is like a permanent version of
 `peut-gerer-buffer-file-to-shell'."
   (interactive)
-  (setq peut-gerer-command (concat peut-gerer-command-prefix " " (buffer-file-name)))
+  (setq peut-gerer-command (concat peut-gerer-command-prefix " "
+				   (format "\"%s\"" (buffer-file-name))))
   (message "Set `peut-gerer-command' to \"%s\"" peut-gerer-command))
 
 (defun peut-gerer-create-shell (name)
