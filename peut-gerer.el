@@ -136,28 +136,32 @@ An entry in the `peut-gerer-project-alist' must contain a :root,
 :main, :venv, and :activate.  For best results, use absolute
 paths.
 
+Required:
 :root     -- project root directory
 :main     -- entry point
 :venv     -- virtual environment directory
 :activate -- activation command
+
+Optional:
 :commands -- commands to add to `peut-gerer-send-command' history
+:load     -- file or directory to open
 
 Example:
 
     (setq peut-gerer-project-alist
-        '((\"project-x\"
-            :root \"/data/data/com.termux/files/home/projects/project-x/\"
-            :main \"main.py\"
-            :venv  \"/data/data/com.termux/files/home/projects/project-x/venv/\"
-            :activate \"source /data/data/com.termux/files/home/projects/project-x/venv/bin/activate\"
-            :commands (\"pyinstaller build.spec\")
-            )
-            (\"project-a\"
-            :root \"C:\\projects\\project-umbrella\\apps\\project_a\\\"
-            :main \"project_a.py\"
-            :venv \"C:\\Users\\excalamus\\Anaconda3\\envs\\project_a\\\"
-            :activate \"C:\\Users\\excalamus\\Anaconda3\\condabin\\conda.bat activate\"
-            )))")
+	'((\"project-x\"
+	    :root \"/data/data/com.termux/files/home/projects/project-x/\"
+	    :main \"main.py\"
+	    :venv  \"/data/data/com.termux/files/home/projects/project-x/venv/\"
+	    :activate \"source /data/data/com.termux/files/home/projects/project-x/venv/bin/activate\"
+	    :commands (\"pyinstaller build.spec\")
+	    )
+	    (\"project-a\"
+	    :root \"C:\\projects\\project-umbrella\\apps\\project_a\\\"
+	    :main \"project_a.py\"
+	    :venv \"C:\\Users\\excalamus\\Anaconda3\\envs\\project_a\\\"
+	    :activate \"C:\\Users\\excalamus\\Anaconda3\\condabin\\conda.bat activate\"
+	    )))")
 
 (defvar peut-gerer--active-projects-alist nil
   "Active projects.")
