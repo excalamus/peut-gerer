@@ -250,31 +250,33 @@ TARGET buffer only if it is visible."
    (let ((target (read-buffer "Switch to: " nil t)))
      (list target nil nil)))
   (let* ((target  ;; buffer name as string
-          (cond ((eq target :shell) peut-gerer-shell)
-                ((eq target :main) (buffer-name
-                                    (get-file-buffer
-                                     (plist-get (cdr (assoc peut-gerer-current-project
-                                                            peut-gerer-project-alist)) :main))))
-                ((bufferp target) (buffer-name target))
-                ((stringp target) (if (get-buffer target) target
-                                    (error "Invalid buffer %s" target)))
+	  (cond ((eq target :shell) peut-gerer-shell)
+		((eq target :main) (buffer-name
+				    (get-file-buffer
+				     (plist-get (cdr (assoc peut-gerer-current-project
+							    peut-gerer-project-alist)) :main))))
+		((bufferp target) (buffer-name target))
+		((stringp target) (if (get-buffer target) target
+				    (error "Invalid buffer %s" target)))
 
-                (t (error "Invalid buffer %s" target))))
-         (raise (or raise nil))
-         (all-frames (or all-frames t)))
+		(t (error "Invalid buffer %s" target))))
+	 (raise (or raise nil))
+	 (all-frames (or all-frames t)))
     (cond
      ((string-equal (buffer-name (current-buffer)) target)
       (switch-to-prev-buffer))
      ((get-buffer-window target all-frames)
       (progn
-        (switch-to-buffer-other-frame target)
-        (goto-char (point-max))))
+	(switch-to-buffer-other-frame target)
+	;; (goto-char (point-max))
+	))
      ((get-buffer target)
       (if raise
-          (progn
-            (switch-to-buffer target)
-            (goto-char (point-max)))
-        (message "Raising is disabled and %s is not currently visible!" target)))
+	  (progn
+	    (switch-to-buffer target)
+	    ;; (goto-char (point-max))
+	    )
+	(message "Raising is disabled and %s is not currently visible!" target)))
      ((message "No %s buffer exists!" target)))))
 
 (defun peut-gerer-send-command (command &optional pbuff beg end)
@@ -288,17 +290,17 @@ calling buffer.
 See URL `https://stackoverflow.com/a/7053298/5065796'"
   (interactive
    (let* ((prompt (format "Send to %s: " peut-gerer-shell))
-          (cmd (read-string prompt "" 'peut-gerer--command-history peut-gerer-command)))
+	  (cmd (read-string prompt "" 'peut-gerer--command-history peut-gerer-command)))
    (list cmd peut-gerer-shell)))
   (let* ((pbuff (or pbuff peut-gerer-shell))
-         (proc (or (get-buffer-process pbuff)
-                   ;; create new process
-                   (let ((currbuff (current-buffer))
-                         (new-proc (peut-gerer-create-shell pbuff)))  ; creates a buried pbuff
-                     (switch-to-buffer-other-window pbuff)
-                     (switch-to-buffer currbuff)
-                     new-proc)))
-         (command-and-go (concat command "\n")))
+	 (proc (or (get-buffer-process pbuff)
+		   ;; create new process
+		   (let ((currbuff (current-buffer))
+			 (new-proc (peut-gerer-create-shell pbuff)))  ; creates a buried pbuff
+		     (switch-to-buffer-other-window pbuff)
+		     (switch-to-buffer currbuff)
+		     new-proc)))
+	 (command-and-go (concat command "\n")))
     (with-current-buffer pbuff
       (goto-char (process-mark proc))
       (insert command-and-go)
@@ -312,7 +314,7 @@ See URL `https://stackoverflow.com/a/7053298/5065796'"
   (interactive)
   (let ((file (buffer-file-name)))
     (if file
-        (peut-gerer-send-command (concat peut-gerer-command-prefix " " file))
+	(peut-gerer-send-command (concat peut-gerer-command-prefix " \"" file "\""))
       (error "Command not sent. Buffer not visiting file"))))
 
 (defun peut-gerer-send-region (&optional beg end pbuff)
@@ -321,14 +323,14 @@ See URL `https://stackoverflow.com/a/7053298/5065796'"
 Use current region if BEG and END not provided.  Default PBUFF is
 `peut-gerer-shell'."
   (interactive (if (use-region-p)
-                   (list (region-beginning) (region-end) nil)
-                 (list nil nil nil)))
+		   (list (region-beginning) (region-end) nil)
+		 (list nil nil nil)))
   (let* ((beg (or beg (if (use-region-p) (region-beginning)) nil))
-         (end (or end (if (use-region-p) (region-end)) nil))
-         (substr (or (and beg end (buffer-substring-no-properties beg end)) nil))
-         (pbuff (or pbuff peut-gerer-shell)))
+	 (end (or end (if (use-region-p) (region-end)) nil))
+	 (substr (or (and beg end (buffer-substring-no-properties beg end)) nil))
+	 (pbuff (or pbuff peut-gerer-shell)))
     (if substr
-        (peut-gerer-send-command substr pbuff)
+	(peut-gerer-send-command substr pbuff)
       (error "No region selected"))))
 
 (defun peut-gerer-open-dir (dirname &optional type)
@@ -339,7 +341,7 @@ Optional regex TYPE to open.
 See URL `https://emacs.stackexchange.com/a/46480/15177'"
   (interactive "DOpen files in: ")
   (let ((type (or type "\\.py$"))
-        (dirname (or dirname peut-gerer-root)))
+	(dirname (or dirname peut-gerer-root)))
     (mapc #'find-file (directory-files dirname t type nil))))
 
 (defun peut-gerer-open-dir-recursive (dirname &optional ext)
@@ -360,9 +362,9 @@ Default DIR is `peut-gerer-root'"
     (mapcar
      (lambda (buf)
        (let ((bfn (buffer-file-name buf)))
-         (and (not (null bfn))
-              (string-match-p (regexp-quote dir) (file-name-directory bfn))
-              (kill-buffer buf))))
+	 (and (not (null bfn))
+	      (string-match-p (regexp-quote dir) (file-name-directory bfn))
+	      (kill-buffer buf))))
      (buffer-list))))
 
 ;; todo make deactivation 'safe' so that other commands correctly
@@ -376,10 +378,10 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
   (interactive
    (list (completing-read "Deactivate project: " peut-gerer--active-projects-alist nil t "" nil)))
   (let* ((root (plist-get (cdr (assoc project peut-gerer-project-alist)) :root))
-         (shell (concat "*" project "*"))
-         (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
-         ;; silence prompts
-         (kill-buffer-query-functions nil))
+	 (shell (concat "*" project "*"))
+	 (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
+	 ;; silence prompts
+	 (kill-buffer-query-functions nil))
 
     ;; todo save only those in root
     (save-some-buffers t)
@@ -388,10 +390,10 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
     (kill-buffer shell)  ; and process
 
     (if (string-equal project peut-gerer-current-project)
-        (progn
-          (setq peut-gerer-current-project nil)
-          (setq peut-gerer-shell nil)
-          (setq peut-gerer-command nil)))
+	(progn
+	  (setq peut-gerer-current-project nil)
+	  (setq peut-gerer-shell nil)
+	  (setq peut-gerer-command nil)))
 
     (delete project peut-gerer--active-projects-alist)
 
@@ -402,16 +404,16 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
   (interactive
    (list (completing-read "Activate project: " (mapcar 'car peut-gerer-project-alist) nil t nil nil)))
   (let* ((root (plist-get (cdr (assoc project peut-gerer-project-alist)) :root))
-         (shell (concat "*" project "*"))
-         (proc (peut-gerer-create-shell shell))
-         (main (plist-get (cdr (assoc project peut-gerer-project-alist)) :main))
-         (main-abs (if (not (file-name-absolute-p main))
-                       (concat root main)
-                     main))
-         (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
-         (activate (plist-get (cdr (assoc project peut-gerer-project-alist)) :activate))
-         (activate-cmd activate)
-         (commands (plist-get (cdr (assoc project peut-gerer-project-alist)) :commands)))
+	 (shell (concat "*" project "*"))
+	 (proc (peut-gerer-create-shell shell))
+	 (main (plist-get (cdr (assoc project peut-gerer-project-alist)) :main))
+	 (main-abs (if (not (file-name-absolute-p main))
+		       (concat root main)
+		     main))
+	 (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
+	 (activate (plist-get (cdr (assoc project peut-gerer-project-alist)) :activate))
+	 (activate-cmd activate)
+	 (commands (plist-get (cdr (assoc project peut-gerer-project-alist)) :commands)))
 
     ;; set up globals
     (setq peut-gerer-current-project project)
@@ -446,29 +448,29 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
   (interactive
    (list (completing-read "Select project: " peut-gerer--active-projects-alist nil t "" nil)))
   (let* ((root (plist-get (cdr (assoc project peut-gerer-project-alist)) :root))
-         (shell (concat "*" project "*"))
-         (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
-         (main (plist-get (cdr (assoc project peut-gerer-project-alist)) :main))
-         (main-abs (if (not (file-name-absolute-p main))
-                       (concat root main)
-                     main))
-         (commands (plist-get (cdr (assoc project peut-gerer-project-alist)) :commands)))
+	 (shell (concat "*" project "*"))
+	 (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
+	 (main (plist-get (cdr (assoc project peut-gerer-project-alist)) :main))
+	 (main-abs (if (not (file-name-absolute-p main))
+		       (concat root main)
+		     main))
+	 (commands (plist-get (cdr (assoc project peut-gerer-project-alist)) :commands)))
 
     (if (not (string-equal project peut-gerer-current-project))
-        (progn
-          (setq peut-gerer-root (subst-char-in-string ?\\ ?/ peut-gerer-root))
-          (setq peut-gerer-shell shell)
-          (setq peut-gerer-command-prefix "python")
-          (setq peut-gerer-command (concat peut-gerer-command-prefix " " main-abs))
+	(progn
+	  (setq peut-gerer-root (subst-char-in-string ?\\ ?/ peut-gerer-root))
+	  (setq peut-gerer-shell shell)
+	  (setq peut-gerer-command-prefix "python")
+	  (setq peut-gerer-command (concat peut-gerer-command-prefix " " main-abs))
 
-          ;; handle virtual environment
-          (run-hook-with-args 'peut-gerer-after-select-functions venv)
+	  ;; handle virtual environment
+	  (run-hook-with-args 'peut-gerer-after-select-functions venv)
 
-          ;; insert commands into peut-gerer--command-history
-          (setq peut-gerer--command-history nil)
-          (mapc #'(lambda (x) (add-to-history 'peut-gerer--command-history x)) commands)
-          (setq peut-gerer-current-project project)
-          (message "Selected '%s' project" peut-gerer-current-project))
+	  ;; insert commands into peut-gerer--command-history
+	  (setq peut-gerer--command-history nil)
+	  (mapc #'(lambda (x) (add-to-history 'peut-gerer--command-history x)) commands)
+	  (setq peut-gerer-current-project project)
+	  (message "Selected '%s' project" peut-gerer-current-project))
       (message "Project '%s' already current" peut-gerer-current-project))))
 
 (provide 'peut-gerer)
