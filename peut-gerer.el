@@ -435,7 +435,8 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
 
     ;; set up shell
     (peut-gerer-send-command (concat "cd " root) shell)
-    (peut-gerer-send-command activate-cmd shell)
+    (if activate
+	(peut-gerer-send-command activate-cmd shell))
     (with-current-buffer shell
       (comint-clear-buffer))
 
@@ -445,7 +446,7 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
     (find-file main-abs)
 
     ;; activate virtual environment
-    (run-hook-with-args 'peut-gerer-after-activate-functions venv)
+    (if venv (run-hook-with-args 'peut-gerer-after-activate-functions venv))
 
     (add-to-list 'peut-gerer--active-projects-alist project)
     (message "Project '%s' loaded" project)))
