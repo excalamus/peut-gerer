@@ -413,18 +413,25 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
 	 (venv (plist-get (cdr (assoc project peut-gerer-project-alist)) :venv))
 	 (activate (plist-get (cdr (assoc project peut-gerer-project-alist)) :activate))
 	 (activate-cmd activate)
+	 (command (plist-get (cdr (assoc project peut-gerer-project-alist)) :command))
 	 (commands (plist-get (cdr (assoc project peut-gerer-project-alist)) :commands)))
 
     ;; set up globals
     (setq peut-gerer-current-project project)
     (setq peut-gerer-root (subst-char-in-string ?\\ ?/ peut-gerer-root))
     (setq peut-gerer-shell shell)
-    (setq peut-gerer-command-prefix "python")
-    (setq peut-gerer-command (concat peut-gerer-command-prefix " " main-abs))
+
+    (if command
+	(setq peut-gerer-command command)
+      (progn
+	;; assume default project type, i.e. python
+	(setq peut-gerer-command-prefix "python")
+	(setq peut-gerer-command (concat peut-gerer-command-prefix " " main-abs))))
 
     ;; insert commands into peut-gerer--command-history
     (setq peut-gerer--command-history nil)
-    (mapc #'(lambda (x) (add-to-history 'peut-gerer--command-history x)) commands)
+    (if commands
+	(mapc #'(lambda (x) (add-to-history 'peut-gerer--command-history x)) commands))
 
     ;; set up shell
     (peut-gerer-send-command (concat "cd " root) shell)
