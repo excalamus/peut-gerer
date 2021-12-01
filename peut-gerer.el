@@ -437,7 +437,7 @@ and removing PROJECT from `peut-gerer--active-projects-alist'."
     ;; set up shell
     (peut-gerer-send-command (concat "cd " root) shell)
     (if setup
-        (peut-gerer-send-command setup))
+        (mapc #'peut-gerer-send-command setup))
     (if activate
         (peut-gerer-send-command activate-cmd shell))
     (with-current-buffer shell
