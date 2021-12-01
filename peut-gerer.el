@@ -239,7 +239,7 @@ Adapted from URL `https://stackoverflow.com/a/36450889/5065796'"
   "Switch to TARGET buffer and RAISE.
 
 TARGET may be a buffer, buffer name, or symbol.  Symbol may be
-`:main' or `:shell' and correspond to those in
+'main or 'shell and correspond to those in
 `peut-gerer-project-alist'.
 
 Switch to previous buffer if current buffer is TARGET.  When RAISE
@@ -250,8 +250,8 @@ TARGET buffer only if it is visible."
    (let ((target (read-buffer "Switch to: " nil t)))
      (list target nil nil)))
   (let* ((target  ;; buffer name as string
-          (cond ((eq target :shell) peut-gerer-shell)
-                ((eq target :main) (buffer-name
+          (cond ((eq target 'shell) peut-gerer-shell)
+                ((eq target 'main) (buffer-name
                                     (get-file-buffer
                                      (plist-get (cdr (assoc peut-gerer-current-project
                                                             peut-gerer-project-alist)) :main))))
